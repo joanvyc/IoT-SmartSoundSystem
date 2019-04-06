@@ -39,6 +39,14 @@ app.use(function(err, req, res, next) {
 });
 
 // init song database
-songdb = JSON.parse(fs.readFileSync('persistance/songsdb.json', 'utf8'));
+songdb = JSON.parse(fs.readFileSync('persistance/songdb.json', 'utf8'));
+
+// init pool
+pool = { "tags": [], "songs": [] };
+
+var i;
+for (i = 0; i < songdb.length; i++) {
+    pool.songs.push(i);
+}
 
 module.exports = app;
