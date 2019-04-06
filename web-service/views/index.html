@@ -10,11 +10,60 @@
 </head>
 
 <body>
-<h1> Gora eta </h1>
+<h1> The ultimate intelligent sound system  </h1>
+<h2> Submit a new song </h2>
 <form method="post" action="/submit">
 	<input type="text" name="url" value=""> 
-	<br><br>
 	<input type="submit" value="Add to pool">
 </form>
+<h2> Set the pool </h2>
+<div style="height:100%; width:100%; overflow: hidden;">
+<div style="float: left; width:33%" >
+<form method="post" action="/hardcore">
+	<input type="submit" value="GO HARDCORE">
+</form>
+</div>
+<div style="float: left; width:33%" >
+<form method="post" action="/chill">
+	<input type="submit" value="GO CHILL">
+</form>
+</div>
+<div style="float: left; width:33%" >
+<form method="post" action="/normie">
+	<input type="submit" value="GO NORMIE">
+</form>
+</div>
+</div>
+<p>Or set the tags to custom selection</p>
+<form method="post" action="/custom">
+	<input type="text" name="taglist" value=""> 
+	<input type="submit" value="Set custom pool">
+</form>
+
+<h2> Audio controls </h2>
+<div style="float: left; margin-right=5px">
+<form method="post" action="/play">
+	<input type="submit" value="&#9658;">
+</form>
+</div>
+<div style="float: left; margin-right=5px">
+<form method="post" action="/pause">
+	<input type="submit" value="&#10074;&#10074;">
+</form>
+</div>
+<div style="float: left; margin-right=5px">
+<form method="post" action="/stop">
+	<input type="submit" value="&#9724;">
+</form>
+</div>
+<div style="float: left; margin-right=5px">
+<form method="post" action="/next">
+	<input type="submit" value="&#9658;&#9658">
+</form>
+</div>
+
+<footer style="position: fixed; bottom: 0">
+Better than spotify©
+</footer>
 </body>
 </html>
