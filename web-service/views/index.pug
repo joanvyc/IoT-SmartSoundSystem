@@ -1,5 +1,9 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
+	h1= title
+	p Welcome to #{title}
+	form(name="submit", method='post')
+		div.input
+			input(type="submit", name="url", value="aixo hauria de ser una url")
+

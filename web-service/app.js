@@ -1,4 +1,5 @@
 var createError = require('http-errors');
+var fs = require('fs');
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
@@ -36,5 +37,8 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+
+// init song database
+songdb = JSON.parse(fs.readFileSync('persistance/songsdb.json', 'utf8'));
 
 module.exports = app;
