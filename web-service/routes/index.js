@@ -29,48 +29,46 @@ function flushPool() {
 
 function fetchSong() {
     var i = Math.floor(Math.random() * pool.song.length);
-    return songdb[pool.song[i]];
+    var ret = songdb[pool.song[i]];
+    return ret;
 }
 
 function play() {
-    if (player == null) {
-        player = new Player(fetchSong().path);
+    if (state == "empty") {
+        state = "playing";
+        player.add(fetchSong().path);
         player.play((err, player) => {
-            console.log('playend!');
+            next_song();
         });
-    } else if (state != playing) {
+    } else if (state != "playing") {
         player.pause();
+        state = "playing";
     }
 }
 
 function pause() {
-    if (state != pause) {
+    if (state != "pause") {
         player.pause();
+        state = "pause";
     }
 }
 
 function stop() {
     player.stop();
-    delete player;
+    player.list = [];
+    state = "empty";
 }
 
-function next() {
+function next_song() {
+    state="playing";
+    var song = fetchSong();
+    player.add(song.path);
     player.next();
 }
-
-function next() {
-    player.add(fetchSong().path);
-    player.next();
-}
-
-player.on('playend',(item) => {
-    next();
-});
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-	console.log(songdb);
-	res.sendFile(path.join(__dirname, "../views/index.html"));
+    res.sendFile(path.join(__dirname, "../views/index.html"));
 });
 
 router.post('/submit', function(req, res, next) {
@@ -88,7 +86,25 @@ router.post('/submit', function(req, res, next) {
 		var args = ['--add-metadata', '-ic', '-o', dir+'%(id)s.%(ext)s', '-x', '--audio-format', 'mp3', '--geo-bypass', '--write-info-json', req.body.url];
 		var spawnSync = require('child_process').spawnSync(command, args);
 		var info = JSON.parse(fs.readFileSync(_path,'utf8'));
-		songdb.push({"id":id,"title":info.title,"track":info.track,"artist":info.artist,"tags":info.tags,"path": dir+id+".mp3"});
+		var song = {"id":id,"title":info.title,"track":info.track,"artist":info.artist,"tags":info.tags,"path": dir+id+".mp3"}
+        songdb.push(song);
+
+
+        // join tool
+        if (pool.tags === undefined || pool.tags.length == 0) {
+            pool.song.push(songdb.length-1);
+        } else {
+            var i, j;
+            check_tags:
+            for (i = 0;!match && i < pool.tags.length; i++) {
+                for (j = 0; !match && j < song.tags.length; j++) {
+                    if (song.tags[j] == pool.tags[i]) {
+                        pool.song.push(songdb.length-1);
+                        break check_tags;
+                    }
+                }
+            }
+        }
 		//console.log(songdb);
 
 		res.sendFile(path.join(__dirname, "../views/index.html"));
@@ -98,4 +114,45 @@ router.post('/submit', function(req, res, next) {
 router.get('/viewer', function(req, res, next) {
 	res.render('viewer.html');
 });
+
+router.post('/play', (req, res, next) => {
+    play();
+    res.sendFile(path.join(__dirname, "../views/index.html"));
+});
+
+router.post('/pause', (req, res, next) =>{
+    pause();
+    res.sendFile(path.join(__dirname, "../views/index.html"));
+});
+
+router.post('/stop', (req, res, next) => {
+    stop();
+    res.sendFile(path.join(__dirname, "../views/index.html"));
+});
+
+router.post('/next', (req, res, next) => {
+    next_song();
+    res.sendFile(path.join(__dirname, "../views/index.html"));
+});
+
+router.post('/hardcore', (req, res, next) => {
+
+    res.sendFile(path.join(__dirname, "../views/index.html"));
+});
+
+router.post('/chill', (req, res, next) => {
+
+    res.sendFile(path.join(__dirname, "../views/index.html"));
+});
+
+router.post('/normie', (req, res, next) => {
+
+    res.sendFile(path.join(__dirname, "../views/index.html"));
+});
+
+router.post('/custom', (req, res, next) => {
+
+    res.sendFile(path.join(__dirname, "../views/index.html"));
+});
+
 module.exports = router;

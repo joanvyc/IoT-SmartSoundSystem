@@ -5,6 +5,8 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
+var Player = require('player');
+
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
@@ -42,11 +44,15 @@ app.use(function(err, req, res, next) {
 songdb = JSON.parse(fs.readFileSync('persistance/songdb.json', 'utf8'));
 
 // init pool
-pool = { "tags": [], "songs": [] };
+pool = { "tags": [], "song": [] };
 
 var i;
 for (i = 0; i < songdb.length; i++) {
-    pool.songs.push(i);
+    pool.song.push(i);
 }
+
+// init player
+state = "empty";
+player = new Player();
 
 module.exports = app;
