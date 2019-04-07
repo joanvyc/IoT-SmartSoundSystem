@@ -3,14 +3,6 @@ var router = express.Router();
 var fs = require('fs');
 var path = require('path');
 
-
-//
-// 1 chill
-// 2 normie
-// 3 rave
-// 4 apagat
-//
-
 function addTag(tag) {
 	var i;
 	var exists = false;
@@ -30,13 +22,17 @@ function setTagList(tagList) {
     for (i = 0; i < tagList.length; i++) {
         addTag(tagList[i]);
     }
-    add_tag:
     for (j = 0; j < songdb.length; j++) {
-        for (i = 0; i < tagList.length; i++) {
-            for (k = 0; k < songdb[j].tags.length; k++) {
-                if (tagList[i] == songdb[j].tags[k]) {
-                    pool.song.push(j);
-                    break add_tag;
+        if (tagList.length == 0) {
+            pool.song.push(j);
+        } else {
+            add_tag:
+            for (i = 0; i < tagList.length; i++) {
+                for (k = 0; k < songdb[j].tags.length; k++) {
+                    if (tagList[i] == songdb[j].tags[k]) {
+                        pool.song.push(j);
+                        break add_tag;
+                    }
                 }
             }
         }
@@ -64,10 +60,12 @@ function fetchSong() {
 function play() {
 	if (state == "empty") {
 		state = "playing";
-		player.add(fetchSong().path);
-		player.play((err, player) => {
-			next_song();
-		});
+        if (pool.song.length) {
+            player.add(fetchSong().path);
+            player.play((err, player) => {
+                next_song();
+            });
+        }
 	} else if (state != "playing") {
 		player.pause();
 		state = "playing";
@@ -205,8 +203,15 @@ router.post('/normie', (req, res, next) => {
 });
 
 router.post('/custom', (req, res, next) => {
-
-	res.sendFile(path.join(__dirname, "../views/index.html"));
+    var tagListRaw = req.body.taglist;
+    var tagList;
+    if (tagListRaw.length != 0) {
+        tagList = tagListRaw.split(",");
+    } else {
+        tagList = [];
+    }
+    setTagList(tagList);
+    res.sendFile(path.join(__dirname, "../views/index.html"));
 });
 
 router.get('/songlist', (req, res, next) => {
