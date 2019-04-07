@@ -225,7 +225,7 @@ console.log(spawnSync.stderr.toString('utf8'));
 		stream.write("<tr>\n<td>" + "\n");
 		stream.write("<form method=\"post\" action=\"/remove\">" + "\n");
 		stream.write("<p style=\"display: flex; float: left; margin-right: 10px;\"> "+ nom + " </p>\n");
-		stream.write("<p hidden name=\"todelete\" value=\" " + i + " \"></p>");
+		stream.write("<input hidden name=\"todelete\" value=\"" + i + "\">");
 		stream.write("<input style=\"display: flex; justify-content: center; padding-block: 5px;\" type=\"submit\" value=\"Delete song\">");
 		stream.write("</form>\n</td>\n</tr>" + "\n");
 	}
@@ -303,6 +303,7 @@ router.post('/auto', (req, res, next) => {
 			set_hardcore_mode();
 		}
 	}
+	res.send("hola drea per molts anys");
 });
 
 router.post('/setauto', (req, res, next) => {
@@ -316,7 +317,16 @@ router.post('/setmanual', (req, res, next) => {
 });
 
 router.post('/remove', (req, res, next) => {
-	console.log(req.body.todelete);	
+        songdb.splice(Number(req.body.todelete), 1);
+	setTagList(pool.tags)
+	var jsoncontent = JSON.stringify(songdb);
+
+	var stream = fs.createWriteStream(path.join(__dirname, "../persistance/songdb.json"), {flags:'w'});
+	stream.write(jsoncontent);
+	stream.end();
+	stream.on('close', function() {
+		res.redirect("/songlist");	
+	});
 });
 
 module.exports = router;
