@@ -3,6 +3,14 @@ var router = express.Router();
 var fs = require('fs');
 var path = require('path');
 
+
+//
+// 1 chill
+// 2 normie
+// 3 rave
+// 4 apagat
+//
+
 function addTag(tag) {
 	var i;
 	var exists = false;
@@ -14,6 +22,25 @@ function addTag(tag) {
 	if (exists) {
 		this.pool.tags.push(tag);
 	}
+}
+
+function setTagList(tagList) {
+    var i, j, k;
+    pool = { "tags": [], "song": [] };
+    for (i = 0; i < tagList.length; i++) {
+        addTag(tagList[i]);
+    }
+    add_tag:
+    for (j = 0; j < songdb.length; i++) {
+        for (i = 0; i < tagList.length; i++) {
+            for (k = 0; k < songdb[j].tags.length; k++) {
+                if (tagList[i] == songdb[j].tags[k]) {
+                    pool.song.push(j);
+                    break add_tag;
+                }
+            }
+        }
+    }
 }
 
 function addTagList(tagList) {
@@ -118,7 +145,7 @@ router.post('/submit', function(req, res, next) {
 	}
 });
 
-router.get('/viewer', function(req, res, next) {
+router.get('/viewer', (req, res, next) => {
 	res.render('viewer.html');
 });
 
@@ -142,19 +169,37 @@ router.post('/next', (req, res, next) => {
 	res.sendFile(path.join(__dirname, "../views/index.html"));
 });
 
-router.post('/hardcore', (req, res, next) => {
+mode = "4";
 
-	res.sendFile(path.join(__dirname, "../views/index.html"));
+function set_hardcore_mode() {
+    setTagList(["electronic", "house", "dub step", "electro", "edm", "bass", "metal"]);
+    mode = "3";
+}
+
+function set_chill_mode() {
+    console.log(songdb);
+//    setTagList([]);
+    mode = "1";
+}
+
+function set_normie_mode() {
+    setTagList([]);
+    mode = "2";
+}
+
+router.post('/hardcore', (req, res, next) => {
+    set_hardcore_mode();
+    res.sendFile(path.join(__dirname, "../views/index.html"));
 });
 
 router.post('/chill', (req, res, next) => {
-
-	res.sendFile(path.join(__dirname, "../views/index.html"));
+    set_chill_mode();
+    res.sendFile(path.join(__dirname, "../views/index.html"));
 });
 
 router.post('/normie', (req, res, next) => {
-
-	res.sendFile(path.join(__dirname, "../views/index.html"));
+    set_normie_mode();
+    res.sendFile(path.join(__dirname, "../views/index.html"));
 });
 
 router.post('/custom', (req, res, next) => {
@@ -172,12 +217,12 @@ console.log(spawnSync.stderr.toString('utf8'));
 	var stream = fs.createWriteStream(path.join(__dirname, "../views/template.html"), {flags:'a'});
 	for(i = 0; i < songdb.length; i++){
 		var nom = songdb[i].track;
-		var artist = songdb[i].artist;
 		if(nom == null) nom = songdb[i].title;
+		else nom = nom + " - " + songdb[i].artist;
 		console.log(nom);
 		stream.write("<tr>\n<td>" + "\n");
 		stream.write("<form method=\"post\" action=\"/remove\">" + "\n");
-		stream.write("<p style=\"display: flex; float: left; margin-right: 10px;\"> "+ nom + " - " + artist + " </p>\n");
+		stream.write("<p style=\"display: flex; float: left; margin-right: 10px;\"> "+ nom + " </p>\n");
 		stream.write("<p hidden name=\"todelete\" value=\" " + songdb.id + " \"></p>");
 		stream.write("<input style=\"display: flex; justify-content: center; padding-block: 5px;\" type=\"submit\" value=\"Delete song\">");
 		stream.write("</form>\n</td>\n</tr>" + "\n");
@@ -191,5 +236,9 @@ console.log(spawnSync.stderr.toString('utf8'));
 		res.sendFile(path.join(__dirname, "../views/template.html"));
 	});
 
+});
+
+router.get('/state', (req, res, next) => {
+    res.send(mode);
 });
 module.exports = router;
