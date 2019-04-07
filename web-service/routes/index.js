@@ -133,7 +133,6 @@ router.post('/submit', function(req, res, next) {
             }
         }
 		//console.log(songdb);
-        fs.writeFile("./persistance/songdb.json");
 		res.sendFile(path.join(__dirname, "../views/index.html"));
 	}
 });
@@ -166,12 +165,13 @@ mode = "4";
 
 
 function set_hardcore_mode() {
-    setTagList([]);
+    setTagList(["electronic", "house", "dub step", "electro", "edm", "bass", "metal"]);
     mode = "3";
 }
 
 function set_chill_mode() {
-    setTagList([]);
+    console.log(songdb);
+//    setTagList([]);
     mode = "1";
 }
 
