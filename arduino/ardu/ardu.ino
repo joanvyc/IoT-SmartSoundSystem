@@ -98,7 +98,7 @@ void medium_mode() {
       break;
   }
 
-  delay(400);
+  delay(500);
   if (led_on == 2 || led_on == 0) middle_status ^= 1;
   if (middle_status) led_on++;
   else led_on--;
