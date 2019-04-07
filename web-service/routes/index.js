@@ -229,8 +229,8 @@ console.log(spawnSync.stderr.toString('utf8'));
 		stream.write("<tr>\n<td>" + "\n");
 		stream.write("<form method=\"post\" action=\"/remove\">" + "\n");
 		stream.write("<p style=\"display: flex; float: left; margin-right: 10px;\"> "+ nom + " </p>\n");
-		stream.write("<input hidden name=\"todelete\" value=\"" + i + "\">");
-		stream.write("<input style=\"display: flex; justify-content: center; padding-block: 5px;\" type=\"submit\" value=\"Delete song\">");
+		stream.write("<p hidden name=\"todelete\" value=\" " + i + " \"></p>");
+		stream.write("<input style=\"display: flex; justify-content: center; padding-block: 5px;float: right;\" type=\"submit\" value=\"Delete song\">");
 		stream.write("</form>\n</td>\n</tr>" + "\n");
 	}
 
@@ -272,13 +272,12 @@ console.log(spawnSync.stderr.toString('utf8'));
 			nom = songdb[current].track;
 			if(nom == null) nom = songdb[current].title;
 			else nom = nom + " - " + songdb[current].artist;
-			nom = nom + "\t\t\t[" + state+"]";
 		}
 	}
 
 	stream.write("<tr>\n<td>" + "\n");
 	stream.write("<form method=\"post\" action=\"/remove\">" + "\n");
-	stream.write("<p style=\"display: flex; float: left; margin-right: 10px;\"> "+ nom + " </p>\n");
+	stream.write("<p style=\"display: flex; float: left; margin-right: 10px;\"> <div>"+ nom + "</div><div style=\"float:right\">[" + state + "]</div></p>\n");
 	stream.write("</form>\n</td>\n</tr>" + "\n");
 
 	stream.write("</table>\n");
