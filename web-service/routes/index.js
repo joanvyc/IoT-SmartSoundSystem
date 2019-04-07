@@ -3,6 +3,14 @@ var router = express.Router();
 var fs = require('fs');
 var path = require('path');
 
+
+//
+// 1 chill
+// 2 normie
+// 3 rave
+// 4 apagat
+//
+
 function addTag(tag) {
     var i;
     var exists = false;
@@ -13,6 +21,25 @@ function addTag(tag) {
     }
     if (exists) {
         this.pool.tags.push(tag);
+    }
+}
+
+function setTagList(tagList) {
+    var i, j, k;
+    pool = { "tags": [], "song": [] };
+    for (i = 0; i < tagList.length; i++) {
+        addTag(tagList[i]);
+    }
+    add_tag:
+    for (j = 0; j < songdb.length; i++) {
+        for (i = 0; i < tagList.length; i++) {
+            for (k = 0; k < songdb[j].tags.length; k++) {
+                if (tagList[i] == songdb[j].tags[k]) {
+                    pool.song.push(j); 
+                    break add_tag;
+                }
+            }
+        }
     }
 }
 
@@ -135,24 +162,33 @@ router.post('/next', (req, res, next) => {
     res.sendFile(path.join(__dirname, "../views/index.html"));
 });
 
-router.post('/hardcore', (req, res, next) => {
+mode = "4";
 
+router.post('/hardcore', (req, res, next) => {
+    
+    mode = "3";
     res.sendFile(path.join(__dirname, "../views/index.html"));
 });
 
 router.post('/chill', (req, res, next) => {
 
+    mode = "1";
     res.sendFile(path.join(__dirname, "../views/index.html"));
 });
 
 router.post('/normie', (req, res, next) => {
 
+    mode = "2";
     res.sendFile(path.join(__dirname, "../views/index.html"));
 });
 
 router.post('/custom', (req, res, next) => {
 
     res.sendFile(path.join(__dirname, "../views/index.html"));
+});
+
+router.get('/state', (req, res, next) => {
+    res.send(mode);
 });
 
 module.exports = router;
