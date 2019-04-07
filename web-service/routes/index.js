@@ -170,7 +170,6 @@ router.post('/next', (req, res, next) => {
 	res.sendFile(path.join(__dirname, "../views/index.html"));
 });
 
-mode = "4";
 
 function set_hardcore_mode() {
     setTagList(["electronic", "house", "dub step", "electro", "edm", "bass", "metal","skrillex"]);
@@ -296,7 +295,7 @@ console.log(spawnSync.stderr.toString('utf8'));
 });
 
 router.post('/auto', (req, res, next) => {
-	if(mode != "manual"){
+	if(modeC == "auto"){
 		if(req.body.mode == "1"){
 			console.log("mode chill")
 			set_chill_mode();
@@ -312,12 +311,12 @@ router.post('/auto', (req, res, next) => {
 });
 
 router.post('/setauto', (req, res, next) => {
-	mode = "auto";
+	modeC = "auto";
 	res.sendFile(path.join(__dirname, "../views/index.html"));
 });
 
 router.post('/setmanual', (req, res, next) => {
-	mode = "manual";
+	modeC = "manual";
 	res.sendFile(path.join(__dirname, "../views/index.html"));
 });
 
