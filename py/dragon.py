@@ -8,8 +8,9 @@ time.sleep(1)
 while True:
     mode = urllib2.urlopen("http://192.168.1.13:3000/state").read() #get state
     arduino.write(mode) #send mode to arduino
-#    data = arduino.read()
+    ldr = 1 #arduino.read()
  #   if len(data) > 0:
- #       print data 
+ #       print Vdata 
     time.sleep(2)
+#parametre mode
 
