@@ -13,12 +13,15 @@
 <h1> The ultimate intelligent sound system  </h1>
 <h2> Submit a new song </h2>
 <form method="post" action="/submit">
-	<input type="text" name="url" value=""> 
+	<input type="text" name="url" value="">
 	<input type="submit" value="Add to pool">
 </form>
 <h2> Manage the song list </h2>
 <form method="get" action="/songlist">
-	<input type="submit" style="float: left" value="Manage!">
+	<input type="submit" style="float: left" value="Manage all songs!">
+</form>
+<form method="get" action="/pool">
+	<input type="submit" style="float: left; margin-left: 10%" value="Manage current pool!">
 </form>
 <br>
 <h2> Set the pool </h2>
@@ -51,7 +54,7 @@
 </div>
 <p>Or set the tags to custom selection</p>
 <form method="post" action="/custom">
-	<input type="text" name="taglist" value=""> 
+	<input type="text" name="taglist" value="">
 	<input type="submit" value="Set custom pool">
 </form>
 

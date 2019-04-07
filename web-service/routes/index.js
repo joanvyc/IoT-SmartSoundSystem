@@ -332,6 +332,45 @@ router.post('/remove', (req, res, next) => {
 	stream.on('close', function() {
 		res.redirect("/songlist");	
 	});
+	console.log(req.body.todelete);
+});
+
+router.get('/pool', (req, res, next) => {
+	var i;
+	var command = 'cp';
+	var args =[path.join(__dirname, "../views/aux3.html"), path.join(__dirname, "../views/PoolView.html")];
+	var spawnSync = require('child_process').spawnSync(command, args);
+console.log(spawnSync.stderr.toString('utf8'));
+	var stream = fs.createWriteStream(path.join(__dirname, "../views/PoolView.html"), {flags:'a'});
+	for(i = 0; i < pool.song.length; i++){
+		var nom = songdb[pool.song[i]].track;
+		if(nom == null) nom = songdb[pool.song[i]].title;
+		else nom = nom + " - " + songdb[pool.song[i]].artist;
+		//console.log(nom);
+		stream.write("<tr>\n<td>" + "\n");
+		stream.write("<form method=\"post\" action=\"/remove\">" + "\n");
+		stream.write("<p style=\"display: flex; float: left; margin-right: 10px;\"> "+ nom + " </p>\n");
+		stream.write("<p hidden name=\"todelete\" value=\" " + i + " \"></p>");
+		stream.write("<input style=\"display: flex; justify-content: center; padding-block: 5px;\" type=\"submit\" value=\"Delete song\">");
+		stream.write("</form>\n</td>\n</tr>" + "\n");
+	}
+
+	stream.write("</table>\n");
+
+	stream.write("<div style=\"float: left; width:25%; padding: 5% 0 0 0\" >" + "\n");
+	stream.write("<form method=\"get\" action=\"/\">");
+	stream.write("<input type=\"submit\" value=\"< Back\">");
+	stream.write("</form></div>"+ "\n");
+
+	stream.write("<footer style=\"position: fixed; bottom: 0; background-color: white\">" + "\n");
+	stream.write("Better than spotify©" + "\n");
+	stream.write("</footer>\n</body>\n</html>" + "\n");
+
+	stream.end();
+	stream.on('close', function() {
+		res.sendFile(path.join(__dirname, "../views/PoolView.html"));
+	});
+
 });
 
 module.exports = router;
