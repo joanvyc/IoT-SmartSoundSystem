@@ -329,7 +329,7 @@ router.post('/remove', (req, res, next) => {
 	stream.write(jsoncontent);
 	stream.end();
 	stream.on('close', function() {
-		res.redirect("/songlist");	
+		res.redirect("/songlist");
 	});
 	console.log(req.body.todelete);
 });
@@ -347,16 +347,16 @@ console.log(spawnSync.stderr.toString('utf8'));
 		else nom = nom + " - " + songdb[pool.song[i]].artist;
 		//console.log(nom);
 		stream.write("<tr>\n<td>" + "\n");
-		stream.write("<form method=\"post\" action=\"/remove\">" + "\n");
+		stream.write("<form method=\"post\" action=\"/removePool\">" + "\n");
 		stream.write("<p style=\"display: flex; float: left; margin-right: 10px;\"> "+ nom + " </p>\n");
-		stream.write("<p hidden name=\"todelete\" value=\" " + i + " \"></p>");
+		stream.write("<input hidden name=\"todelete2\" value=\" " + i + " \">");
 		stream.write("<input style=\"display: flex; justify-content: center; padding-block: 5px;\" type=\"submit\" value=\"Delete song\">");
 		stream.write("</form>\n</td>\n</tr>" + "\n");
 	}
 
 	stream.write("</table>\n");
 
-	stream.write("<div style=\"float: left; width:25%; padding: 5% 0 0 0\" >" + "\n");
+	stream.write("<div style=\"float: left; width:20%; padding: 5% 0 0 0\" >" + "\n");
 	stream.write("<form method=\"get\" action=\"/\">");
 	stream.write("<input type=\"submit\" value=\"< Back\">");
 	stream.write("</form></div>"+ "\n");
@@ -370,6 +370,13 @@ console.log(spawnSync.stderr.toString('utf8'));
 		res.sendFile(path.join(__dirname, "../views/PoolView.html"));
 	});
 
+});
+
+router.post('/removePool', (req, res, next) => {
+        pool.song.splice(Number(req.body.todelete2), 1);
+	setTagList(pool.tags)
+	res.redirect("/pool");
+	console.log(req.body.todelete2);
 });
 
 module.exports = router;
