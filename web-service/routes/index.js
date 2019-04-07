@@ -4,76 +4,76 @@ var fs = require('fs');
 var path = require('path');
 
 function addTag(tag) {
-    var i;
-    var exists = false;
-    for (i = 0; i < pool.tag.lenght; i++) {
-        if (pool.tag[i] == tag) {
-            exists = true;
-        }
-    }
-    if (exists) {
-        this.pool.tags.push(tag);
-    }
+	var i;
+	var exists = false;
+	for (i = 0; i < pool.tag.lenght; i++) {
+		if (pool.tag[i] == tag) {
+			exists = true;
+		}
+	}
+	if (exists) {
+		this.pool.tags.push(tag);
+	}
 }
 
 function addTagList(tagList) {
-    var i;
-    for (i = 0; i < tagList.length; i++) {
-        addTag(tagList[i]);
-    }
+	var i;
+	for (i = 0; i < tagList.length; i++) {
+		addTag(tagList[i]);
+	}
 }
 
 function flushPool() {
-    pool = { "tags":[], "song":[] };
+	pool = { "tags":[], "song":[] };
 }
 
 function fetchSong() {
-    var i = Math.floor(Math.random() * pool.song.length);
-    var ret = songdb[pool.song[i]];
-    return ret;
+	var i = Math.floor(Math.random() * pool.song.length);
+	var ret = songdb[pool.song[i]];
+	return ret;
 }
 
 function play() {
-    if (state == "empty") {
-        state = "playing";
-        player.add(fetchSong().path);
-        player.play((err, player) => {
-            next_song();
-        });
-    } else if (state != "playing") {
-        player.pause();
-        state = "playing";
-    }
+	if (state == "empty") {
+		state = "playing";
+		player.add(fetchSong().path);
+		player.play((err, player) => {
+			next_song();
+		});
+	} else if (state != "playing") {
+		player.pause();
+		state = "playing";
+	}
 }
 
 function pause() {
-    if (state != "pause") {
-        player.pause();
-        state = "pause";
-    }
+	if (state != "pause") {
+		player.pause();
+		state = "pause";
+	}
 }
 
 function stop() {
-    player.stop();
-    player.list = [];
-    state = "empty";
+	player.stop();
+	player.list = [];
+	state = "empty";
 }
 
 function next_song() {
-    state="playing";
-    var song = fetchSong();
-    player.add(song.path);
-    player.next();
+	state="playing";
+	var song = fetchSong();
+	player.add(song.path);
+	player.next();
 }
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-    res.sendFile(path.join(__dirname, "../views/index.html"));
+	res.sendFile(path.join(__dirname, "../views/index.html"));
 });
 
 router.post('/submit', function(req, res, next) {
-	//res.sendFile(path.join(__dirname, "../views/loading.html"));
 	console.log("New post " + req.body.url);
+
 	var dir = 'persistance/';
 	var command = 'youtube-dl';
 	var args =['--add-metadata', '-ic', '-o', dir+'%(id)s.%(ext)s', '-x', '--audio-format', 'mp3', '--get-id', '--geo-bypass', '--write-info-json', req.body.url];
@@ -87,27 +87,34 @@ router.post('/submit', function(req, res, next) {
 		var spawnSync = require('child_process').spawnSync(command, args);
 		var info = JSON.parse(fs.readFileSync(_path,'utf8'));
 		var song = {"id":id,"title":info.title,"track":info.track,"artist":info.artist,"tags":info.tags,"path": dir+id+".mp3"}
-        songdb.push(song);
+		songdb.push(song);
 
+		var jsoncontent = JSON.stringify(songdb);
 
-        // join tool
-        if (pool.tags === undefined || pool.tags.length == 0) {
-            pool.song.push(songdb.length-1);
-        } else {
-            var i, j;
-            check_tags:
-            for (i = 0;!match && i < pool.tags.length; i++) {
-                for (j = 0; !match && j < song.tags.length; j++) {
-                    if (song.tags[j] == pool.tags[i]) {
-                        pool.song.push(songdb.length-1);
-                        break check_tags;
-                    }
-                }
-            }
-        }
-		//console.log(songdb);
+		var stream = fs.createWriteStream(path.join(__dirname, "../persistance/songdb.json"), {flags:'w'});
+		stream.write(jsoncontent);
+		stream.end();
+		stream.on('close', function() {
 
-		res.sendFile(path.join(__dirname, "../views/index.html"));
+			// join tool
+			if (pool.tags === undefined || pool.tags.length == 0) {
+				pool.song.push(songdb.length-1);
+			} else {
+				var i, j;
+				check_tags:
+				for (i = 0;!match && i < pool.tags.length; i++) {
+					for (j = 0; !match && j < song.tags.length; j++) {
+						if (song.tags[j] == pool.tags[i]) {
+							pool.song.push(songdb.length-1);
+							break check_tags;
+						}
+					}
+				}
+			}
+			//console.log(songdb);
+
+			res.sendFile(path.join(__dirname, "../views/index.html"));
+		});
 	}
 });
 
@@ -116,43 +123,73 @@ router.get('/viewer', function(req, res, next) {
 });
 
 router.post('/play', (req, res, next) => {
-    play();
-    res.sendFile(path.join(__dirname, "../views/index.html"));
+	play();
+	res.sendFile(path.join(__dirname, "../views/index.html"));
 });
 
 router.post('/pause', (req, res, next) =>{
-    pause();
-    res.sendFile(path.join(__dirname, "../views/index.html"));
+	pause();
+	res.sendFile(path.join(__dirname, "../views/index.html"));
 });
 
 router.post('/stop', (req, res, next) => {
-    stop();
-    res.sendFile(path.join(__dirname, "../views/index.html"));
+	stop();
+	res.sendFile(path.join(__dirname, "../views/index.html"));
 });
 
 router.post('/next', (req, res, next) => {
-    next_song();
-    res.sendFile(path.join(__dirname, "../views/index.html"));
+	next_song();
+	res.sendFile(path.join(__dirname, "../views/index.html"));
 });
 
 router.post('/hardcore', (req, res, next) => {
 
-    res.sendFile(path.join(__dirname, "../views/index.html"));
+	res.sendFile(path.join(__dirname, "../views/index.html"));
 });
 
 router.post('/chill', (req, res, next) => {
 
-    res.sendFile(path.join(__dirname, "../views/index.html"));
+	res.sendFile(path.join(__dirname, "../views/index.html"));
 });
 
 router.post('/normie', (req, res, next) => {
 
-    res.sendFile(path.join(__dirname, "../views/index.html"));
+	res.sendFile(path.join(__dirname, "../views/index.html"));
 });
 
 router.post('/custom', (req, res, next) => {
 
-    res.sendFile(path.join(__dirname, "../views/index.html"));
+	res.sendFile(path.join(__dirname, "../views/index.html"));
 });
 
+router.get('/songlist', (req, res, next) => {
+	console.log(songdb);
+	var i;
+	var command = 'cp';
+	var args =[path.join(__dirname, "../views/aux.html"), path.join(__dirname, "../views/template.html")];
+	var spawnSync = require('child_process').spawnSync(command, args);
+console.log(spawnSync.stderr.toString('utf8'));
+	var stream = fs.createWriteStream(path.join(__dirname, "../views/template.html"), {flags:'a'});
+	for(i = 0; i < songdb.length; i++){
+		var nom = songdb[i].track;
+		var artist = songdb[i].artist;
+		if(nom == null) nom = songdb[i].title;
+		console.log(nom);
+		stream.write("<tr>\n<td>" + "\n");
+		stream.write("<form method=\"post\" action=\"/remove\">" + "\n");
+		stream.write("<p style=\"display: flex; float: left; margin-right: 10px;\"> "+ nom + " - " + artist + " </p>\n");
+		stream.write("<p hidden name=\"todelete\" value=\" " + songdb.id + " \"></p>");
+		stream.write("<input style=\"display: flex; justify-content: center; padding-block: 5px;\" type=\"submit\" value=\"Delete song\">");
+		stream.write("</form>\n</td>\n</tr>" + "\n");
+	}
+	stream.write("</table>\n<footer style=\"position: fixed; bottom: 0\">" + "\n");
+	stream.write("Better than spotify©" + "\n");
+	stream.write("</footer>\n</body>\n</html>" + "\n");
+
+	stream.end();
+	stream.on('close', function() {
+		res.sendFile(path.join(__dirname, "../views/template.html"));
+	});
+
+});
 module.exports = router;
