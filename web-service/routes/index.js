@@ -94,7 +94,7 @@ function next_song() {
 }
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
+router.get('/', (req, res, next) => {
     res.sendFile(path.join(__dirname, "../views/index.html"));
 });
 
@@ -133,12 +133,11 @@ router.post('/submit', function(req, res, next) {
             }
         }
 		//console.log(songdb);
-
 		res.sendFile(path.join(__dirname, "../views/index.html"));
 	}
 });
 
-router.get('/viewer', function(req, res, next) {
+router.get('/viewer', (req, res, next) => {
 	res.render('viewer.html');
 });
 
@@ -164,21 +163,35 @@ router.post('/next', (req, res, next) => {
 
 mode = "4";
 
-router.post('/hardcore', (req, res, next) => {
-    
+
+function set_hardcore_mode() {
+    setTagList(["electronic", "house", "dub step", "electro", "edm", "bass", "metal"]);
     mode = "3";
+}
+
+function set_chill_mode() {
+    console.log(songdb);
+//    setTagList([]);
+    mode = "1";
+}
+
+function set_normie_mode() {
+    setTagList([]);
+    mode = "2";
+}
+
+router.post('/hardcore', (req, res, next) => {
+    set_hardcore_mode();    
     res.sendFile(path.join(__dirname, "../views/index.html"));
 });
 
 router.post('/chill', (req, res, next) => {
-
-    mode = "1";
+    set_chill_mode();
     res.sendFile(path.join(__dirname, "../views/index.html"));
 });
 
 router.post('/normie', (req, res, next) => {
-
-    mode = "2";
+    set_normie_mode();
     res.sendFile(path.join(__dirname, "../views/index.html"));
 });
 
