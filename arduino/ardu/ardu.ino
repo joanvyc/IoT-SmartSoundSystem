@@ -129,7 +129,7 @@ void loop() {
     char new_mode = Serial.read();
     
     if (new_mode != 0) mode = new_mode;
-    Serial.write(new_mode);
+    Serial.write(light_lvl);
      // mirar maxims be
   }
   
