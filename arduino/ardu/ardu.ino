@@ -1,18 +1,23 @@
-#define btn 42
+#define btn  42
 #define ledY 12
 #define ledB 10
 #define ledG 8
 #define ledW 6
 #define ledR 4
+#define ldr  A12
+#define chill_max 500
+#define medium_max 800
+#define off '4'
+#define chill '1'
+#define medium '2'
+#define rave '3'
 
-int mode; // 0 off, 1 chill, 2 medium, 3 disco
-int state = 0;
-int old_val = 0;
+char mode; // 1 chill, 2 medium, 3 disco, 4 off
 
 // chill mode
-int brightness = 130;
+int brightness = 100;
 int bright_state = 1; // 0 decrease, 1 augmentar
-int bright_step = 10;
+int bright_step = 5;
 
 
 // medium mode
@@ -21,11 +26,9 @@ int middle_status = 0; //0 decrementar, 1 incrementar
 
 // rave mode
 int rand_num;
+int rand_on;
 
-int btn_state;
-int last_btn_state = LOW;
-long last_deb_time = 0;
-long ret_deb = 25;
+int light;
 
 void setup() {
   pinMode (btn, INPUT);
@@ -34,9 +37,11 @@ void setup() {
   pinMode (ledG, OUTPUT);
   pinMode (ledW, OUTPUT);
   pinMode (ledR, OUTPUT);
+  Serial.begin(9600);
   
   randomSeed(analogRead(0));
-  mode = 3;
+  mode = 1;
+
 }
 
 void chill_mode() { 
@@ -46,19 +51,19 @@ void chill_mode() {
   analogWrite(ledW, brightness);
   analogWrite(ledR, brightness);
   if (bright_state) { //incrementar
-    if (brightness < 130) {
+    if (brightness < 100) {
       brightness += bright_step;
-      delay(150);
+      delay(200);
     }
     else {
-      brightness = 130;
+      brightness = 100;
       bright_state = 0;
     }
   }
   else { // decrementar
     if (brightness > 0)  {
       brightness -= bright_step;
-      delay(150);
+      delay(200);
     }
     else {
       brightness = 0;
@@ -102,46 +107,51 @@ void medium_mode() {
 
 void rave_mode() {
   rand_num = random(0, 255);
-  int rand_on = random(0,1) * rand_num;
-  analogWrite(ledY, rand_on);
-  analogWrite(ledB, 0);
-  analogWrite(ledG, 0);
-  analogWrite(ledW, 0);
-  analogWrite(ledR, 0);
-  delay(300);
+  rand_on = rand_num * random(0, 1);
+  analogWrite(ledY, rand_num);
+  analogWrite(ledB, (rand_num+62)%255);
+  analogWrite(ledG, (rand_num-73));
+  analogWrite(ledW, rand_num);
+  analogWrite(ledR, (rand_num+171)%255);
+  delay(100);
 }
 
 void loop() {
-/*  int val = digitalRead(btn);
-  if (val != old_val) {
-    lastTimeDeb = millis();
-    old_val = val;
-  }
-  if ((millis() - lastTimeDeb) > retDeb) {
-    if (val != old
-  }
-  old_val = val;
 
-  if (state) mode = (mode+1)%4;*/
-  /*mode = (mode + 1)%4;*/
+  light = analogRead(ldr);
+  char light_lvl;
+  if (light < chill_max) light_lvl = '1';
+  else if (light < medium_max) light_lvl = '2';
+  else light_lvl = '3';
+  
+  
+  if (Serial.available() > 0) {
+    char new_mode = Serial.read();
+    
+    if (new_mode != 0) mode = new_mode;
+    Serial.write(new_mode);
+     // mirar maxims be
+  }
   
   switch (mode) {
-    case 0: //apagat
+    case off: //apagat
       digitalWrite(ledY, LOW);
       digitalWrite(ledB, LOW);
       digitalWrite(ledG, LOW);
       digitalWrite(ledW, LOW);
       digitalWrite(ledR, LOW);
       break;
-    case 1: // chill
+    case chill: // chill
       chill_mode();
       break;
-    case 2: // medium
+    case medium: // medium
       medium_mode();
       break;
     default: // disco
       rave_mode();
       break;
   }
+
+  /*Serial.println(light);*/
 
 }
