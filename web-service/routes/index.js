@@ -86,10 +86,14 @@ function stop() {
 }
 
 function next_song() {
-	state="playing";
-	var song = fetchSong();
-	player.add(song.path);
-	player.next();
+    if (pool.song.length != 0) {
+        state="playing";
+        var song = fetchSong();
+        player.add(song.path);
+        player.next();
+    } else {
+        stop();
+    }
 }
 
 /* GET home page. */
