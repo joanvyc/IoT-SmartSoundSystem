@@ -348,7 +348,7 @@ console.log(spawnSync.stderr.toString('utf8'));
 		stream.write("<tr>\n<td>" + "\n");
 		stream.write("<form method=\"post\" action=\"/removePool\">" + "\n");
 		stream.write("<p style=\"display: flex; float: left; margin-right: 10px;\"> "+ nom + " </p>\n");
-		stream.write("<input hidden name=\"todelete2\" value=\" " + i + " \">");
+		stream.write("<input hidden name=\"todelete2\" value=\"" + i + "\">");
 		stream.write("<input style=\"display: flex; justify-content: center; padding-block: 5px;\" type=\"submit\" value=\"Delete song\">");
 		stream.write("</form>\n</td>\n</tr>" + "\n");
 	}
@@ -373,9 +373,7 @@ console.log(spawnSync.stderr.toString('utf8'));
 
 router.post('/removePool', (req, res, next) => {
         pool.song.splice(Number(req.body.todelete2), 1);
-	setTagList(pool.tags)
 	res.redirect("/pool");
-	console.log(req.body.todelete2);
 });
 
 module.exports = router;
