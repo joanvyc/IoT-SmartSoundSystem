@@ -14,12 +14,12 @@ var path = require('path');
 function addTag(tag) {
 	var i;
 	var exists = false;
-	for (i = 0; i < pool.tag.lenght; i++) {
-		if (pool.tag[i] == tag) {
+	for (i = 0; i < pool.tags.length; i++) {
+		if (pool.tags[i] == tag) {
 			exists = true;
 		}
 	}
-	if (exists) {
+	if (!exists) {
 		this.pool.tags.push(tag);
 	}
 }
@@ -31,7 +31,7 @@ function setTagList(tagList) {
         addTag(tagList[i]);
     }
     add_tag:
-    for (j = 0; j < songdb.length; i++) {
+    for (j = 0; j < songdb.length; j++) {
         for (i = 0; i < tagList.length; i++) {
             for (k = 0; k < songdb[j].tags.length; k++) {
                 if (tagList[i] == songdb[j].tags[k]) {
@@ -139,8 +139,10 @@ router.post('/submit', function(req, res, next) {
 					}
 				}
 			}
-			//console.log(songdb);
 
+			var command = 'rm';
+			var args =[path.join(__dirname, "../persistance/"+id+".info.json")];
+			var spawnSync = require('child_process').spawnSync(command, args);
 			res.sendFile(path.join(__dirname, "../views/index.html"));
 		});
 	}
@@ -178,13 +180,12 @@ function set_hardcore_mode() {
 }
 
 function set_chill_mode() {
-    console.log(songdb);
-    setTagList([]);
+    setTagList(["reggae"]);
     mode = "1";
 }
 
 function set_normie_mode() {
-    setTagList(["dance", "dance music", "pop", "latin pop", "acoustic", "pop acoustic", "rihana", "shakira","Ariana Grande"]);
+    setTagList(["dance", "dance music", "pop", "latin pop", "acoustic", "pop acoustic", "rihana"]);
     mode = "2";
 }
 
@@ -224,7 +225,7 @@ console.log(spawnSync.stderr.toString('utf8'));
 		stream.write("<tr>\n<td>" + "\n");
 		stream.write("<form method=\"post\" action=\"/remove\">" + "\n");
 		stream.write("<p style=\"display: flex; float: left; margin-right: 10px;\"> "+ nom + " </p>\n");
-		stream.write("<p hidden name=\"todelete\" value=\" " + songdb.id + " \"></p>");
+		stream.write("<p hidden name=\"todelete\" value=\" " + i + " \"></p>");
 		stream.write("<input style=\"display: flex; justify-content: center; padding-block: 5px;\" type=\"submit\" value=\"Delete song\">");
 		stream.write("</form>\n</td>\n</tr>" + "\n");
 	}
@@ -312,6 +313,10 @@ router.post('/setauto', (req, res, next) => {
 router.post('/setmanual', (req, res, next) => {
 	mode = "manual";
 	res.sendFile(path.join(__dirname, "../views/index.html"));
+});
+
+router.post('/remove', (req, res, next) => {
+	console.log(req.body.todelete);	
 });
 
 module.exports = router;
