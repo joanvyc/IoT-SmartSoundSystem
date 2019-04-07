@@ -42,7 +42,7 @@ app.use(function(err, req, res, next) {
 
 // init song database
 songdb = JSON.parse(fs.readFileSync('persistance/songdb.json', 'utf8'));
-
+current = -1;
 // init pool
 pool = { "tags": [], "song": [] };
 

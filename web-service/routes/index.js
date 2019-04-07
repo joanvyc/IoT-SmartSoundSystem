@@ -57,6 +57,7 @@ function flushPool() {
 function fetchSong() {
 	var i = Math.floor(Math.random() * pool.song.length);
 	var ret = songdb[pool.song[i]];
+	current = pool.song[i];
 	return ret;
 }
 
@@ -177,7 +178,7 @@ function set_hardcore_mode() {
 }
 
 function set_chill_mode() {
-    console.log(songdb);
+    //console.log(songdb);
 //    setTagList([]);
     mode = "1";
 }
@@ -208,7 +209,7 @@ router.post('/custom', (req, res, next) => {
 });
 
 router.get('/songlist', (req, res, next) => {
-	console.log(songdb);
+	//console.log(songdb);
 	var i;
 	var command = 'cp';
 	var args =[path.join(__dirname, "../views/aux.html"), path.join(__dirname, "../views/template.html")];
@@ -219,7 +220,7 @@ console.log(spawnSync.stderr.toString('utf8'));
 		var nom = songdb[i].track;
 		if(nom == null) nom = songdb[i].title;
 		else nom = nom + " - " + songdb[i].artist;
-		console.log(nom);
+		//console.log(nom);
 		stream.write("<tr>\n<td>" + "\n");
 		stream.write("<form method=\"post\" action=\"/remove\">" + "\n");
 		stream.write("<p style=\"display: flex; float: left; margin-right: 10px;\"> "+ nom + " </p>\n");
@@ -227,7 +228,15 @@ console.log(spawnSync.stderr.toString('utf8'));
 		stream.write("<input style=\"display: flex; justify-content: center; padding-block: 5px;\" type=\"submit\" value=\"Delete song\">");
 		stream.write("</form>\n</td>\n</tr>" + "\n");
 	}
-	stream.write("</table>\n<footer style=\"position: fixed; bottom: 0\">" + "\n");
+
+	stream.write("</table>\n");
+
+	stream.write("<div style=\"float: left; width:25%; padding: 5% 0 0 0\" >" + "\n");
+	stream.write("<form method=\"get\" action=\"/\">");
+	stream.write("<input type=\"submit\" value=\"< Back\">");
+	stream.write("</form></div>"+ "\n");
+
+	stream.write("<footer style=\"position: fixed; bottom: 0; background-color: white\">" + "\n");
 	stream.write("Better than spotify©" + "\n");
 	stream.write("</footer>\n</body>\n</html>" + "\n");
 
@@ -240,5 +249,43 @@ console.log(spawnSync.stderr.toString('utf8'));
 
 router.get('/state', (req, res, next) => {
     res.send(mode);
+});
+
+router.get('/view', (req, res, next) => {
+	var command = 'cp';
+	var args =[path.join(__dirname, "../views/aux2.html"), path.join(__dirname, "../views/LaView.html")];
+	var spawnSync = require('child_process').spawnSync(command, args);
+console.log(spawnSync.stderr.toString('utf8'));
+	var stream = fs.createWriteStream(path.join(__dirname, "../views/LaView.html"), {flags:'a'});
+	var nom;
+
+	if(state == "empty") nom = "There is nothing playing at the moment!";
+	else{
+
+		if(current < 0) nom = " ";
+		else{
+			nom = songdb[current].track;
+			if(nom == null) nom = songdb[current].title;
+			else nom = nom + " - " + songdb[current].artist;
+			nom = nom + "\t\t\t[" + state+"]";
+		}
+	}
+
+	stream.write("<tr>\n<td>" + "\n");
+	stream.write("<form method=\"post\" action=\"/remove\">" + "\n");
+	stream.write("<p style=\"display: flex; float: left; margin-right: 10px;\"> "+ nom + " </p>\n");
+	stream.write("</form>\n</td>\n</tr>" + "\n");
+
+	stream.write("</table>\n");
+
+	stream.write("<footer style=\"position: fixed; bottom: 0; background-color: white\">" + "\n");
+	stream.write("Better than spotify©" + "\n");
+	stream.write("</footer>\n</body>\n</html>" + "\n");
+
+	stream.end();
+	stream.on('close', function() {
+		res.sendFile(path.join(__dirname, "../views/LaView.html"));
+	});
+
 });
 module.exports = router;

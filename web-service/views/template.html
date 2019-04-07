@@ -39,8 +39,17 @@ tr:nth-child(2n) {
 <p hidden name="todelete" value=" undefined "></p><input style="display: flex; justify-content: center; padding-block: 5px;" type="submit" value="Delete song"></form>
 </td>
 </tr>
+<tr>
+<td>
+<form method="post" action="/remove">
+<p style="display: flex; float: left; margin-right: 10px;"> Leave My Mind - Modestep </p>
+<p hidden name="todelete" value=" undefined "></p><input style="display: flex; justify-content: center; padding-block: 5px;" type="submit" value="Delete song"></form>
+</td>
+</tr>
 </table>
-<footer style="position: fixed; bottom: 0">
+<div style="float: left; width:25%; padding: 5% 0 0 0" >
+<form method="get" action="/"><input type="submit" value="< Back"></form></div>
+<footer style="position: fixed; bottom: 0; background-color: white">
 Better than spotify©
 </footer>
 </body>
