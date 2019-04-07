@@ -19,12 +19,12 @@ function addTag(tag) {
 function addTagList(tagList) {
     var i;
     for (i = 0; i < tagList.length; i++) {
-        addTag(tagList[i];
+        addTag(tagList[i]);
     }
 }
 
 function flushPool() {
-    pool = { "tags"=[], "song"=[] };
+    pool = { "tags":[], "song":[] };
 }
 
 function fetchSong() {
