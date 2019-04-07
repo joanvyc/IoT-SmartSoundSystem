@@ -53,6 +53,7 @@ for (i = 0; i < songdb.length; i++) {
 
 // init player
 state = "empty";
+mode = "manual";
 player = new Player();
 
 module.exports = app;

@@ -172,18 +172,18 @@ router.post('/next', (req, res, next) => {
 mode = "4";
 
 function set_hardcore_mode() {
-    setTagList(["electronic", "house", "dub step", "electro", "edm", "bass", "metal"]);
+    setTagList(["electronic", "house", "dub step", "electro", "edm", "bass", "metal","skrillex"]);
     mode = "3";
 }
 
 function set_chill_mode() {
     console.log(songdb);
-//    setTagList([]);
+    setTagList([]);
     mode = "1";
 }
 
 function set_normie_mode() {
-    setTagList([]);
+    setTagList(["dance", "dance music", "pop", "latin pop", "acoustic", "pop acoustic", "rihana", "shakira","Ariana Grande"]);
     mode = "2";
 }
 
@@ -239,6 +239,32 @@ console.log(spawnSync.stderr.toString('utf8'));
 });
 
 router.get('/state', (req, res, next) => {
-    res.send(mode);
+    	res.send(mode);
 });
+
+router.post('/auto', (req, res, next) => {
+	if(mode != "manual"){
+		if(req.body.mode == "1"){
+			console.log("mode chill")
+			set_chill_mode();
+		}else if(req.body.mode == "2"){
+			console.log("mode normie")
+			set_normie_mode();
+		}else if(req.body.mode == "3"){
+			console.log("mode hardcore")
+			set_hardcore_mode();
+		}
+	}
+});
+
+router.post('/setauto', (req, res, next) => {
+	mode = "auto";
+	res.sendFile(path.join(__dirname, "../views/index.html"));
+});
+
+router.post('/setmanual', (req, res, next) => {
+	mode = "manual";
+	res.sendFile(path.join(__dirname, "../views/index.html"));
+});
+
 module.exports = router;
