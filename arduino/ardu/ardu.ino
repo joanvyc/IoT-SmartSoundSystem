@@ -6,7 +6,7 @@
 #define ledR 4
 #define ldr  A12
 #define chill_max 500
-#define medium_max 800
+#define medium_max 850
 #define off '4'
 #define chill '1'
 #define medium '2'
@@ -132,6 +132,9 @@ void loop() {
     Serial.write(light_lvl);
      // mirar maxims be
   }
+  //Serial.println(light);
+  /*mode = light_lvl;
+  Serial.println(light_lvl);*/
   
   switch (mode) {
     case off: //apagat
@@ -151,7 +154,5 @@ void loop() {
       rave_mode();
       break;
   }
-
-  /*Serial.println(light);*/
 
 }
